@@ -61,18 +61,26 @@ const segmenterConfig = {
 ```
 
 ### Adjust Edge Refinement
-To modify edge quality, edit the bilateral filter parameters in `app.js` (lines 263-265):
+To modify edge quality, edit the configuration constants at the top of `app.js` (lines 7-12):
 ```javascript
-const kernelRadius = 3;      // Larger = more smoothing (1-5)
-const sigmaSpace = 2.0;       // Spatial smoothing strength
-const sigmaRange = 0.2;       // Edge preservation strength
+const BILATERAL_FILTER_CONFIG = {
+    kernelRadius: 3,      // Larger = more smoothing (1-5)
+    sigmaSpace: 2.0,      // Spatial smoothing strength
+    sigmaRange: 0.2       // Edge preservation strength
+};
 ```
 
 ### Adjust Alpha Matting
-To change transparency handling, edit `app.js` (lines 311-312):
+To change transparency handling, edit the configuration constants in `app.js` (lines 14-21):
 ```javascript
-const erosionRadius = 2;      // Edge shrinking (1-3)
-const dilationRadius = 2;     // Edge expansion (1-3)
+const ALPHA_MATTING_CONFIG = {
+    erosionRadius: 2,              // Edge shrinking (1-3)
+    dilationRadius: 2,             // Edge expansion (1-3)
+    foregroundThreshold: 0.9,      // Values above this are definite foreground
+    backgroundThreshold: 0.1,      // Values below this are definite background
+    transitionStart: 0.3,          // Start of smooth transition zone
+    transitionRange: 0.4           // Range of smooth transition (0.3 to 0.7)
+};
 ```
 
 ### Update Styles

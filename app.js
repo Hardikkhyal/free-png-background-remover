@@ -3,6 +3,22 @@ let segmenter = null;
 let currentImage = null;
 let isModelLoaded = false;
 
+// Configuration constants for image processing
+const BILATERAL_FILTER_CONFIG = {
+    kernelRadius: 3,      // Larger = more smoothing (1-5)
+    sigmaSpace: 2.0,      // Spatial smoothing strength
+    sigmaRange: 0.2       // Edge preservation strength
+};
+
+const ALPHA_MATTING_CONFIG = {
+    erosionRadius: 2,     // Edge shrinking (1-3)
+    dilationRadius: 2,    // Edge expansion (1-3)
+    foregroundThreshold: 0.9,  // Values above this are definite foreground
+    backgroundThreshold: 0.1,  // Values below this are definite background
+    transitionStart: 0.3,      // Start of smooth transition zone
+    transitionRange: 0.4       // Range of smooth transition (0.3 to 0.7)
+};
+
 // DOM Elements
 const uploadSection = document.getElementById('uploadSection');
 const loadingSection = document.getElementById('loadingSection');
@@ -236,11 +252,10 @@ async function extractMask(segmentation, width, height) {
         const maskData = seg.mask;
         
         // Convert mask data to normalized values (0-1)
-        await maskData.toArray().then(array => {
-            for (let i = 0; i < array.length; i++) {
-                mask[i] = array[i];
-            }
-        });
+        const array = await maskData.toArray();
+        for (let i = 0; i < array.length; i++) {
+            mask[i] = array[i];
+        }
     }
     
     return mask;
@@ -260,9 +275,7 @@ function refineEdges(mask, width, height) {
 // Bilateral filter for edge-preserving smoothing
 function bilateralFilter(mask, width, height) {
     const filtered = new Float32Array(mask.length);
-    const kernelRadius = 3;
-    const sigmaSpace = 2.0;
-    const sigmaRange = 0.2;
+    const { kernelRadius, sigmaSpace, sigmaRange } = BILATERAL_FILTER_CONFIG;
     
     for (let y = 0; y < height; y++) {
         for (let x = 0; x < width; x++) {
@@ -308,8 +321,8 @@ function bilateralFilter(mask, width, height) {
 // Alpha matting for better transparency handling
 function alphaMatting(mask, width, height) {
     const matted = new Float32Array(mask.length);
-    const erosionRadius = 2;
-    const dilationRadius = 2;
+    const { erosionRadius, dilationRadius, foregroundThreshold, backgroundThreshold, 
+            transitionStart, transitionRange } = ALPHA_MATTING_CONFIG;
     
     // Create eroded and dilated versions
     const eroded = new Float32Array(mask.length);
@@ -366,17 +379,17 @@ function alphaMatting(mask, width, height) {
         const m = mask[i];
         
         // Definite foreground
-        if (e > 0.9) {
+        if (e > foregroundThreshold) {
             matted[i] = 1.0;
         }
         // Definite background
-        else if (d < 0.1) {
+        else if (d < backgroundThreshold) {
             matted[i] = 0.0;
         }
         // Unknown region - smooth transition
         else {
             // Apply smoothstep function for natural-looking edges
-            const t = (m - 0.3) / 0.4; // Map 0.3-0.7 to 0-1
+            const t = (m - transitionStart) / transitionRange;
             const clamped = Math.max(0, Math.min(1, t));
             matted[i] = clamped * clamped * (3 - 2 * clamped);
         }
