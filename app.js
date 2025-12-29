@@ -1,5 +1,5 @@
 // Application State
-let model = null;
+let segmenter = null;
 let currentImage = null;
 let isModelLoaded = false;
 
@@ -43,18 +43,21 @@ function setupEventListeners() {
     document.addEventListener('drop', (e) => e.preventDefault());
 }
 
-// Load TensorFlow.js BodyPix model
+// Load MediaPipe Selfie Segmentation model
 async function loadModel() {
     try {
         showLoading('Loading AI model...');
         
-        // BodyPix is lighter and faster than U²-Net, suitable for browser use
-        // ResNet50 architecture provides good quality
-        model = await bodyPix.load({
-            architecture: 'ResNet50',
-            outputStride: 16,
-            quantBytes: 4
-        });
+        // MediaPipe Selfie Segmentation provides better results across different lighting conditions
+        // Using landscape model for general-purpose segmentation
+        const model = bodySegmentation.SupportedModels.MediaPipeSelfieSegmentation;
+        const segmenterConfig = {
+            runtime: 'mediapipe',
+            solutionPath: 'https://cdn.jsdelivr.net/npm/@mediapipe/selfie_segmentation',
+            modelType: 'general' // 'general' works better for various lighting conditions
+        };
+        
+        segmenter = await bodySegmentation.createSegmenter(model, segmenterConfig);
         
         isModelLoaded = true;
         hideLoading();
@@ -104,7 +107,7 @@ function handleDrop(event) {
 // Process uploaded file
 async function processFile(file) {
     // Check if model is loaded
-    if (!isModelLoaded || !model) {
+    if (!isModelLoaded || !segmenter) {
         alert('AI model is still loading. Please wait a moment and try again.');
         return;
     }
@@ -171,24 +174,20 @@ function displayOriginalImage(img) {
     ctx.drawImage(img, 0, 0);
 }
 
-// Remove background using TensorFlow.js BodyPix
+// Remove background using MediaPipe Selfie Segmentation with advanced processing
 async function removeBackground(img) {
     // Additional safety check
-    if (!model) {
-        throw new Error('Model not loaded');
+    if (!segmenter) {
+        throw new Error('Segmenter not loaded');
     }
     
     try {
         updateLoadingText('Analyzing image...');
         
-        // Perform segmentation
-        const segmentation = await model.segmentPerson(img, {
-            flipHorizontal: false,
-            internalResolution: 'medium',
-            segmentationThreshold: 0.7
-        });
+        // Perform segmentation with MediaPipe
+        const segmentation = await segmenter.segmentPeople(img);
         
-        updateLoadingText('Removing background...');
+        updateLoadingText('Processing segmentation mask...');
         
         // Create result canvas with same dimensions
         resultCanvas.width = img.width;
@@ -202,13 +201,20 @@ async function removeBackground(img) {
         const imageData = ctx.getImageData(0, 0, img.width, img.height);
         const pixels = imageData.data;
         
-        // Apply mask - make background transparent
-        const mask = segmentation.data;
-        for (let i = 0; i < mask.length; i++) {
-            // If pixel is background (0), make it transparent
-            if (mask[i] === 0) {
-                pixels[i * 4 + 3] = 0; // Set alpha to 0
-            }
+        // Extract mask from segmentation
+        const mask = await extractMask(segmentation, img.width, img.height);
+        
+        updateLoadingText('Refining edges...');
+        
+        // Apply advanced edge refinement for better quality
+        const refinedMask = refineEdges(mask, img.width, img.height);
+        
+        updateLoadingText('Removing background...');
+        
+        // Apply mask with alpha channel
+        for (let i = 0; i < refinedMask.length; i++) {
+            // Use the refined mask value as alpha channel
+            pixels[i * 4 + 3] = Math.round(refinedMask[i] * 255);
         }
         
         // Apply processed image data
@@ -219,6 +225,164 @@ async function removeBackground(img) {
         console.error('Error removing background:', error);
         throw new Error('Failed to remove background');
     }
+}
+
+// Extract mask from segmentation result
+async function extractMask(segmentation, width, height) {
+    const mask = new Float32Array(width * height);
+    
+    if (segmentation.length > 0) {
+        const seg = segmentation[0];
+        const maskData = seg.mask;
+        
+        // Convert mask data to normalized values (0-1)
+        await maskData.toArray().then(array => {
+            for (let i = 0; i < array.length; i++) {
+                mask[i] = array[i];
+            }
+        });
+    }
+    
+    return mask;
+}
+
+// Advanced edge refinement for cleaner cutouts
+function refineEdges(mask, width, height) {
+    // Apply bilateral filtering for edge-preserving smoothing
+    const refined = bilateralFilter(mask, width, height);
+    
+    // Apply alpha matting for better edge quality
+    const matted = alphaMatting(refined, width, height);
+    
+    return matted;
+}
+
+// Bilateral filter for edge-preserving smoothing
+function bilateralFilter(mask, width, height) {
+    const filtered = new Float32Array(mask.length);
+    const kernelRadius = 3;
+    const sigmaSpace = 2.0;
+    const sigmaRange = 0.2;
+    
+    for (let y = 0; y < height; y++) {
+        for (let x = 0; x < width; x++) {
+            const centerIdx = y * width + x;
+            const centerValue = mask[centerIdx];
+            
+            let weightSum = 0;
+            let valueSum = 0;
+            
+            // Apply kernel
+            for (let ky = -kernelRadius; ky <= kernelRadius; ky++) {
+                for (let kx = -kernelRadius; kx <= kernelRadius; kx++) {
+                    const nx = x + kx;
+                    const ny = y + ky;
+                    
+                    // Check bounds
+                    if (nx >= 0 && nx < width && ny >= 0 && ny < height) {
+                        const idx = ny * width + nx;
+                        const value = mask[idx];
+                        
+                        // Spatial weight
+                        const spatialDist = kx * kx + ky * ky;
+                        const spatialWeight = Math.exp(-spatialDist / (2 * sigmaSpace * sigmaSpace));
+                        
+                        // Range weight (value similarity)
+                        const rangeDist = (value - centerValue) * (value - centerValue);
+                        const rangeWeight = Math.exp(-rangeDist / (2 * sigmaRange * sigmaRange));
+                        
+                        const weight = spatialWeight * rangeWeight;
+                        weightSum += weight;
+                        valueSum += weight * value;
+                    }
+                }
+            }
+            
+            filtered[centerIdx] = valueSum / weightSum;
+        }
+    }
+    
+    return filtered;
+}
+
+// Alpha matting for better transparency handling
+function alphaMatting(mask, width, height) {
+    const matted = new Float32Array(mask.length);
+    const erosionRadius = 2;
+    const dilationRadius = 2;
+    
+    // Create eroded and dilated versions
+    const eroded = new Float32Array(mask.length);
+    const dilated = new Float32Array(mask.length);
+    
+    // Erosion (shrink foreground)
+    for (let y = 0; y < height; y++) {
+        for (let x = 0; x < width; x++) {
+            const centerIdx = y * width + x;
+            let minValue = 1.0;
+            
+            for (let ky = -erosionRadius; ky <= erosionRadius; ky++) {
+                for (let kx = -erosionRadius; kx <= erosionRadius; kx++) {
+                    const nx = x + kx;
+                    const ny = y + ky;
+                    
+                    if (nx >= 0 && nx < width && ny >= 0 && ny < height) {
+                        const idx = ny * width + nx;
+                        minValue = Math.min(minValue, mask[idx]);
+                    }
+                }
+            }
+            
+            eroded[centerIdx] = minValue;
+        }
+    }
+    
+    // Dilation (expand foreground)
+    for (let y = 0; y < height; y++) {
+        for (let x = 0; x < width; x++) {
+            const centerIdx = y * width + x;
+            let maxValue = 0.0;
+            
+            for (let ky = -dilationRadius; ky <= dilationRadius; ky++) {
+                for (let kx = -dilationRadius; kx <= dilationRadius; kx++) {
+                    const nx = x + kx;
+                    const ny = y + ky;
+                    
+                    if (nx >= 0 && nx < width && ny >= 0 && ny < height) {
+                        const idx = ny * width + nx;
+                        maxValue = Math.max(maxValue, mask[idx]);
+                    }
+                }
+            }
+            
+            dilated[centerIdx] = maxValue;
+        }
+    }
+    
+    // Compute trimap and refined alpha
+    for (let i = 0; i < mask.length; i++) {
+        const e = eroded[i];
+        const d = dilated[i];
+        const m = mask[i];
+        
+        // Definite foreground
+        if (e > 0.9) {
+            matted[i] = 1.0;
+        }
+        // Definite background
+        else if (d < 0.1) {
+            matted[i] = 0.0;
+        }
+        // Unknown region - smooth transition
+        else {
+            // Apply smoothstep function for natural-looking edges
+            const t = (m - 0.3) / 0.4; // Map 0.3-0.7 to 0-1
+            const clamped = Math.max(0, Math.min(1, t));
+            matted[i] = clamped * clamped * (3 - 2 * clamped);
+        }
+    }
+    
+    return matted;
 }
 
 // Download processed image

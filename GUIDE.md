@@ -32,10 +32,11 @@
 ## 💡 Usage Tips
 
 ### Best Results
-- Use images with clear subjects (people, products, animals)
-- Good lighting and contrast improves results
+- Use images with clear subjects (people work best with this model)
+- The tool now works well in various lighting conditions (bright, dim, mixed)
 - Images under 5MB process faster
-- High-resolution images maintain quality better
+- High-resolution images maintain quality better with the new edge refinement
+- Works best when subject contrasts with background
 
 ### Supported Formats
 - **Input**: JPG, PNG, WEBP
@@ -50,23 +51,28 @@
 ## 🔧 Customization
 
 ### Change Model Settings
-Edit `app.js` line 52-56 to adjust model parameters:
+The app now uses MediaPipe Selfie Segmentation. To adjust settings, edit `app.js` lines 54-58:
 ```javascript
-model = await bodyPix.load({
-    architecture: 'ResNet50',  // or 'MobileNetV1' for faster loading
-    outputStride: 16,          // 8, 16, or 32 (lower = more accurate, slower)
-    quantBytes: 4              // 1, 2, or 4 (higher = more accurate, slower)
-});
+const segmenterConfig = {
+    runtime: 'mediapipe',
+    solutionPath: 'https://cdn.jsdelivr.net/npm/@mediapipe/selfie_segmentation',
+    modelType: 'general' // 'general' for robust performance, 'landscape' for portraits
+};
 ```
 
-### Adjust Segmentation Quality
-Edit `app.js` line 170-173:
+### Adjust Edge Refinement
+To modify edge quality, edit the bilateral filter parameters in `app.js` (lines 263-265):
 ```javascript
-const segmentation = await model.segmentPerson(img, {
-    flipHorizontal: false,
-    internalResolution: 'medium',  // 'low', 'medium', 'high', or 'full'
-    segmentationThreshold: 0.7     // 0.0 to 1.0 (higher = more strict)
-});
+const kernelRadius = 3;      // Larger = more smoothing (1-5)
+const sigmaSpace = 2.0;       // Spatial smoothing strength
+const sigmaRange = 0.2;       // Edge preservation strength
+```
+
+### Adjust Alpha Matting
+To change transparency handling, edit `app.js` (lines 311-312):
+```javascript
+const erosionRadius = 2;      // Edge shrinking (1-3)
+const dilationRadius = 2;     // Edge expansion (1-3)
 ```
 
 ### Update Styles
@@ -85,16 +91,16 @@ Edit `styles.css` to customize:
 - Check browser console for errors
 
 ### Poor background removal quality
-- Try images with better lighting
-- Adjust `segmentationThreshold` (0.5-0.9)
-- Use higher `internalResolution`
-- Ensure subject is clearly visible
+- The new model works better in various lighting conditions
+- Ensure subject is clearly visible and distinct from background
+- Try adjusting bilateral filter settings for more/less smoothing
+- For very complex edges, you may need to adjust alpha matting parameters
 
 ### Slow processing
 - Reduce image size before upload
-- Use 'MobileNetV1' architecture instead
-- Increase `outputStride` to 32
+- The new algorithm includes edge refinement which takes extra time but provides better quality
 - Close other browser tabs
+- Ensure your device has sufficient memory available
 
 ### Browser compatibility issues
 - Update to latest browser version
@@ -111,7 +117,7 @@ Found a bug? Have a suggestion?
 ## 🎓 Learn More
 
 - [TensorFlow.js Documentation](https://www.tensorflow.org/js)
-- [BodyPix Model Guide](https://github.com/tensorflow/tfjs-models/tree/master/body-pix)
+- [MediaPipe Selfie Segmentation](https://google.github.io/mediapipe/solutions/selfie_segmentation.html)
 - [Canvas API Reference](https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API)
 
 ---

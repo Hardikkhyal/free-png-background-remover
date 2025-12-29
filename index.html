@@ -109,14 +109,16 @@
         </aside>
 
         <footer>
-            <p>Made with ❤️ using TensorFlow.js • Runs 100% in your browser • No data uploaded</p>
+            <p>Made with ❤️ using TensorFlow.js & MediaPipe • Runs 100% in your browser • No data uploaded</p>
             <p class="disclaimer">Your privacy is important. All image processing happens locally on your device.</p>
         </footer>
     </div>
 
-    <!-- Load TensorFlow.js and BodyPix -->
+    <!-- Load TensorFlow.js and MediaPipe Selfie Segmentation -->
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.11.0/dist/tf.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/body-pix@2.2.0/dist/body-pix.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs-backend-webgl@4.11.0/dist/tf-backend-webgl.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/selfie_segmentation"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/body-segmentation@1.0.2/dist/body-segmentation.min.js"></script>
     <script src="app.js"></script>
 </body>
 </html>

@@ -6,7 +6,9 @@ A free, unlimited, high-quality PNG background remover that runs 100% in your br
 
 - **🚀 Fast Processing**: AI-powered background removal in seconds
 - **🔒 100% Private**: All processing happens locally in your browser - your images never leave your device
-- **✨ High Quality**: Preserves fine details and edges using TensorFlow.js BodyPix model
+- **✨ High Quality**: Preserves fine details and edges using MediaPipe Selfie Segmentation with advanced edge refinement
+- **🌓 Lighting Robust**: Works accurately across different lighting conditions (bright, dim, mixed lighting)
+- **🎯 Advanced Edge Refinement**: Uses bilateral filtering and alpha matting for professional-quality cutouts
 - **♾️ Unlimited**: No limits, no watermarks, completely free forever
 - **📱 Mobile Friendly**: Works smoothly on both desktop and mobile devices
 - **💾 PNG Export**: Download images with transparent backgrounds
@@ -23,7 +25,9 @@ Simply open `index.html` in your browser or deploy to GitHub Pages.
 - **Vanilla JavaScript**: No framework dependencies
 - **Canvas API**: Image manipulation and processing
 - **TensorFlow.js**: Machine learning inference in the browser
-- **BodyPix Model**: Person segmentation for background removal
+- **MediaPipe Selfie Segmentation**: Advanced person segmentation optimized for various lighting conditions
+- **Bilateral Filtering**: Edge-preserving smoothing for cleaner cutouts
+- **Alpha Matting**: Professional-grade transparency handling
 
 ## 📖 How to Use
 
@@ -56,9 +60,16 @@ open index.html
 ## 🔧 Technical Details
 
 ### Model
-- Uses TensorFlow.js BodyPix model with ResNet50 architecture
-- Optimized for browser performance with medium internal resolution
-- Configurable segmentation threshold for quality control
+- Uses MediaPipe Selfie Segmentation with 'general' model type for robust performance
+- Optimized for browser performance with excellent accuracy across lighting conditions
+- Advanced edge refinement with bilateral filtering
+- Alpha matting for professional-quality transparency
+
+### Image Processing Pipeline
+1. **Segmentation**: MediaPipe analyzes the image and creates an initial mask
+2. **Bilateral Filtering**: Edge-preserving smoothing that maintains sharp edges while reducing noise
+3. **Alpha Matting**: Creates smooth transitions at object boundaries using erosion/dilation
+4. **Smoothstep Function**: Natural-looking edge transitions for professional results
 
 ### Browser Compatibility
 - Chrome/Edge: ✅ Full support
@@ -85,14 +96,13 @@ This project is open source and available under the MIT License.
 ## 🙏 Acknowledgments
 
 - [TensorFlow.js](https://www.tensorflow.org/js) - Machine learning in the browser
-- [BodyPix](https://github.com/tensorflow/tfjs-models/tree/master/body-pix) - Person segmentation model
+- [MediaPipe](https://google.github.io/mediapipe/) - Selfie Segmentation model for accurate results
 
 ## ⚠️ Limitations
 
-- Works best with images containing people
-- Background removal quality depends on image clarity
-- Large images may take longer to process
-- Requires modern browser with JavaScript enabled
+- Works best with images containing people (optimized for person segmentation)
+- Large images may take longer to process due to advanced edge refinement
+- Requires modern browser with JavaScript and WebGL enabled
 
 ## 🔮 Future Enhancements
 
