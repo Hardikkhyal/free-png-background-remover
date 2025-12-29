@@ -29,33 +29,6 @@ Simply open `index.html` in your browser or deploy to GitHub Pages.
 - **Bilateral Filtering**: Edge-preserving smoothing for cleaner cutouts
 - **Alpha Matting**: Professional-grade transparency handling
 
-## 📖 How to Use
-
-1. **Open the App**: Open `index.html` in any modern web browser
-2. **Upload Image**: Drag and drop an image or click to browse
-3. **Wait for Processing**: The AI model will automatically remove the background
-4. **Download**: Click "Download PNG" to save your image with a transparent background
-
-## 💻 Local Development
-
-No build process required! Simply:
-
-```bash
-# Clone the repository
-git clone https://github.com/Hardikkhyal/free-png-background-remover.git
-
-# Open in browser
-cd free-png-background-remover
-open index.html
-# or just double-click index.html
-```
-
-## 🌐 Deploy to GitHub Pages
-
-1. Go to your repository settings
-2. Navigate to "Pages" section
-3. Select the main branch as source
-4. Your app will be live at `https://yourusername.github.io/free-png-background-remover/`
 
 ## 🔧 Technical Details
 
