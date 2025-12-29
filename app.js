@@ -65,7 +65,7 @@ async function loadModel() {
         showLoading('Loading AI model...');
         
         // MediaPipe Selfie Segmentation provides better results across different lighting conditions
-        // Using landscape model for general-purpose segmentation
+        // Using general model for robust performance across various scenarios
         const model = bodySegmentation.SupportedModels.MediaPipeSelfieSegmentation;
         const segmenterConfig = {
             runtime: 'mediapipe',
@@ -311,7 +311,8 @@ function bilateralFilter(mask, width, height) {
                 }
             }
             
-            filtered[centerIdx] = valueSum / weightSum;
+            // Apply weighted average with fallback for edge cases
+            filtered[centerIdx] = weightSum > 0 ? valueSum / weightSum : centerValue;
         }
     }
     
