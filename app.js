@@ -390,6 +390,10 @@ async function refineEdges(canvas, maskData) {
 downloadBtn.addEventListener('click', () => {
     try {
         resultCanvas.toBlob((blob) => {
+            if (!blob) {
+                showError('Failed to generate image. Please try again.');
+                return;
+            }
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
