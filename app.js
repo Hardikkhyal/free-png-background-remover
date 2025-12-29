@@ -61,7 +61,10 @@ async function loadModel() {
         console.log('Model loaded successfully');
     } catch (error) {
         console.error('Error loading model:', error);
-        loadingText.textContent = 'Error loading model. Please refresh the page.';
+        isModelLoaded = false;
+        hideLoading();
+        showUpload();
+        alert('Error loading AI model. Please refresh the page and try again.');
     }
 }
 
@@ -100,6 +103,12 @@ function handleDrop(event) {
 
 // Process uploaded file
 async function processFile(file) {
+    // Check if model is loaded
+    if (!isModelLoaded || !model) {
+        alert('AI model is still loading. Please wait a moment and try again.');
+        return;
+    }
+    
     // Validate file size (10MB limit)
     if (file.size > 10 * 1024 * 1024) {
         alert('File size must be less than 10MB');
@@ -112,20 +121,27 @@ async function processFile(file) {
         return;
     }
     
-    showLoading('Processing image...');
-    
-    // Load image
-    const img = await loadImage(file);
-    currentImage = img;
-    
-    // Display original image
-    displayOriginalImage(img);
-    
-    // Remove background
-    await removeBackground(img);
-    
-    hideLoading();
-    showResult();
+    try {
+        showLoading('Processing image...');
+        
+        // Load image
+        const img = await loadImage(file);
+        currentImage = img;
+        
+        // Display original image
+        displayOriginalImage(img);
+        
+        // Remove background
+        await removeBackground(img);
+        
+        hideLoading();
+        showResult();
+    } catch (error) {
+        console.error('Error processing file:', error);
+        hideLoading();
+        showUpload();
+        alert('Error processing image. Please try another image.');
+    }
 }
 
 // Load image from file
@@ -157,6 +173,11 @@ function displayOriginalImage(img) {
 
 // Remove background using TensorFlow.js BodyPix
 async function removeBackground(img) {
+    // Additional safety check
+    if (!model) {
+        throw new Error('Model not loaded');
+    }
+    
     try {
         updateLoadingText('Analyzing image...');
         
@@ -196,7 +217,7 @@ async function removeBackground(img) {
         updateLoadingText('Done!');
     } catch (error) {
         console.error('Error removing background:', error);
-        alert('Error processing image. Please try another image.');
+        throw new Error('Failed to remove background');
     }
 }
 
