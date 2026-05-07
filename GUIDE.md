@@ -1,4 +1,4 @@
- Usage Tips
+ ###Usage Tips
 
 ### Best Results
 - Use images with clear subjects (people work best with this model)
