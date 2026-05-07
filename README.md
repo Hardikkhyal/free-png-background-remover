@@ -8,7 +8,7 @@ A free, unlimited, privacy-first AI background remover that runs entirely in you
 - No limits
 - Works offline
 
----\
+---
 
 ## Live Demo
 
