@@ -8,13 +8,7 @@ A free, unlimited, privacy-first AI background remover that runs entirely in you
 - No limits
 - Works offline
 
----
-
-## Demo
-
-![Demo GIF](./screenshots/demo.gif)
-
----
+---\
 
 ## Live Demo
 
