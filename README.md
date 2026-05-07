@@ -164,15 +164,15 @@ Or use VS Code Live Server extension.
 
 ## Home Screen
 
-![Home](./screenshots/home.png)
+![Home](images/home.png)
 
 ## Processing
 
-![Processing](./screenshots/processing.png)
+![Processing](images/processing.png)
 
 ## Result
 
-![Result](./screenshots/result.png)
+![Result](images/result.png)
 
 ---
 
