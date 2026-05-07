@@ -1,90 +1,222 @@
-# 🎨 Free PNG Background Remover
+# AI Background Remover
 
-A free, unlimited, high-quality PNG background remover that runs 100% in your browser. No login required, no watermarks, no usage limits.
+A free, unlimited, privacy-first AI background remover that runs entirely in your browser.
 
-## ✨ Features
-
-- **🚀 Fast Processing**: AI-powered background removal in seconds
-- **🔒 100% Private**: All processing happens locally in your browser - your images never leave your device
-- **✨ High Quality**: Preserves fine details and edges using MediaPipe Selfie Segmentation with advanced edge refinement
-- **🌓 Lighting Robust**: Works accurately across different lighting conditions (bright, dim, mixed lighting)
-- **🎯 Advanced Edge Refinement**: Uses bilateral filtering and alpha matting for professional-quality cutouts
-- **♾️ Unlimited**: No limits, no watermarks, completely free forever
-- **📱 Mobile Friendly**: Works smoothly on both desktop and mobile devices
-- **💾 PNG Export**: Download images with transparent backgrounds
-- **🎯 No Setup**: Just open and use - no installation or registration needed
-
-## 🚀 Live Demo
-
-Simply open `index.html` in your browser or deploy to GitHub Pages.
-
-## 🛠️ Technology Stack
-
-- **HTML5**: Semantic markup and structure
-- **CSS3**: Modern responsive design with gradients and animations
-- **Vanilla JavaScript**: No framework dependencies
-- **Canvas API**: Image manipulation and processing
-- **TensorFlow.js**: Machine learning inference in the browser
-- **MediaPipe Selfie Segmentation**: Advanced person segmentation optimized for various lighting conditions
-- **Bilateral Filtering**: Edge-preserving smoothing for cleaner cutouts
-- **Alpha Matting**: Professional-grade transparency handling
-
-
-## 🔧 Technical Details
-
-### Model
-- Uses MediaPipe Selfie Segmentation with 'general' model type for robust performance
-- Optimized for browser performance with excellent accuracy across lighting conditions
-- Advanced edge refinement with bilateral filtering
-- Alpha matting for professional-quality transparency
-
-### Image Processing Pipeline
-1. **Segmentation**: MediaPipe analyzes the image and creates an initial mask
-2. **Bilateral Filtering**: Edge-preserving smoothing that maintains sharp edges while reducing noise
-3. **Alpha Matting**: Creates smooth transitions at object boundaries using erosion/dilation
-4. **Smoothstep Function**: Natural-looking edge transitions for professional results
-
-### Browser Compatibility
-- Chrome/Edge: ✅ Full support
-- Firefox: ✅ Full support
-- Safari: ✅ Full support
-- Mobile browsers: ✅ Full support
-
-### Performance
-- Model loads asynchronously
-- Processing time varies by image size (typically 2-5 seconds)
-- Recommended max image size: 10MB
-
-## 🤝 Contributing
-
-Contributions are welcome! Feel free to:
-- Report bugs
-- Suggest features
-- Submit pull requests
-
-## 📝 License
-
-This project is open source and available under the MIT License.
-
-## 🙏 Acknowledgments
-
-- [TensorFlow.js](https://www.tensorflow.org/js) - Machine learning in the browser
-- [MediaPipe](https://google.github.io/mediapipe/) - Selfie Segmentation model for accurate results
-
-## ⚠️ Limitations
-
-- Works best with images containing people (optimized for person segmentation)
-- Large images may take longer to process due to advanced edge refinement
-- Requires modern browser with JavaScript and WebGL enabled
-
-## 🔮 Future Enhancements
-
-- Support for more object types (animals, products, etc.)
-- Advanced edge refinement options
-- Batch processing
-- Image editing tools (crop, resize, adjust)
-- Custom background colors/images
+- No uploads
+- No login
+- No watermarks
+- No limits
+- Works offline
 
 ---
 
-Made with ❤️ for the open-source community
+## Demo
+
+![Demo GIF](./screenshots/demo.gif)
+
+---
+
+## Live Demo
+
+👉 [Try Now](https://your-demo-link.com)
+
+---
+
+## Features
+
+- 🚀 Fast AI-powered background removal
+- 🔒 100% private — images never leave your device
+- ✨ High-quality transparent PNG export
+- 🎯 Advanced edge refinement for smooth cutouts
+- 🌓 Works across different lighting conditions
+- ♾️ Unlimited usage with no restrictions
+- 📱 Fully responsive and mobile-friendly
+- 💾 One-click PNG download
+- ⚡ No installation required
+
+---
+
+## Before & After
+
+| Original | Background Removed |
+|----------|-------------------|
+| ![Before](./screenshots/before.png) | ![After](./screenshots/after.png) |
+
+---
+
+# Why This Project Exists
+
+Most free background remover tools:
+
+- Upload your images to external servers
+- Add watermarks
+- Require subscriptions
+- Limit usage
+
+This project keeps everything local, private, and completely free forever.
+
+---
+
+# How It Works
+
+text
+Upload Image
+    ↓
+MediaPipe Segmentation
+    ↓
+Edge Refinement
+    ↓
+Alpha Matting
+    ↓
+Transparent PNG Export
+
+
+
+
+# Technology Stack
+
+- HTML5
+- CSS3
+- Vanilla JavaScript
+- TensorFlow.js
+- MediaPipe Selfie Segmentation
+- Canvas API
+
+---
+
+# Technical Highlights
+
+### AI Segmentation
+Uses MediaPipe Selfie Segmentation with the `general` model for accurate person detection.
+
+### Edge Refinement
+Applies bilateral filtering and alpha matting for smoother object boundaries.
+
+### Browser Processing
+All processing happens locally inside the browser using TensorFlow.js and WebGL acceleration.
+
+---
+
+# Installation
+
+Clone the repository:
+
+`bash
+git clone https://github.com/your-username/your-repo-name.git
+``
+
+Open the project folder:
+
+``bash
+cd your-repo-name
+
+
+Run locally:
+
+`bash
+open index.html
+``
+
+Or use VS Code Live Server extension.
+
+--
+
+# Browser Compatibility
+
+| Browser | Support |
+|---|---|
+| Chrome | ✅ |
+| Edge | ✅ |
+| Firefox | ✅ |
+| Safari | ✅ |
+| Mobile Browsers | ✅ |
+
+---
+
+# Performance
+
+- Typical processing time: 2–5 seconds
+- Recommended maximum image size: 10MB
+- Model loads asynchronously for better performance
+
+---
+
+# Limitations
+
+- Optimized primarily for person segmentation
+- Large images may process more slowly
+- Requires JavaScript and WebGL support
+
+---
+
+# Future Enhancements
+
+- Support for object segmentation
+- Batch image processing
+- Background replacement
+- Image editing tools
+- Custom background colors
+- Adjustable edge refinement settings
+
+---
+
+# Screenshots
+
+## Home Screen
+
+![Home](./screenshots/home.png)
+
+## Processing
+
+![Processing](./screenshots/processing.png)
+
+## Result
+
+![Result](./screenshots/result.png)
+
+---
+
+# Contributing
+
+Contributions are welcome.
+
+You can help by:
+
+- Reporting bugs
+- Suggesting improvements
+- Submitting pull requests
+- Improving documentation
+
+---
+
+# Topics
+
+``text
+background-removal
+ai
+tensorflowjs
+mediapipe
+image-processing
+javascript
+web-app
+privacy
+png
+machine-learning
+browser-based
+photo-editor
+`
+
+-
+
+# License
+
+This project is licensed under the MIT License.
+
+---
+
+# Acknowledgments
+
+- TensorFlow.js
+- MediaPipe
+- Canvas API
+- Open-source community
