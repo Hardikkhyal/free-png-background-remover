@@ -40,7 +40,7 @@ A free, unlimited, privacy-first AI background remover that runs entirely in you
 
 | Original | Background Removed |
 |----------|-------------------|
-| ![Before](./screenshots/before.png) | ![After](./screenshots/after.png) |
+| ![Before](./screenshots/before.jpg) | ![After](images/after.png) |
 
 ---
 
