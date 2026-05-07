@@ -18,7 +18,7 @@ A free, unlimited, privacy-first AI background remover that runs entirely in you
 
 ## Live Demo
 
-👉 [Try Now](https://your-demo-link.com)
+👉 [Try Now](https://hardikkhyal.github.io/free-png-background-remover/)
 
 ---
 
